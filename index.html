@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记账本</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1 id="page-title">记账</h1>
+        </header>
+        <section id="page-record" class="page active">
+            <div class="record-form">
+                <div class="type-switch">
+                    <button class="type-btn active" data-type="expense">支出</button>
+                    <button class="type-btn" data-type="income">收入</button>
+                </div>
+                <div class="amount-input">
+                    <span class="currency-symbol">¥</span>
+                    <input type="number" id="input-amount" placeholder="0.00" step="0.01" min="0">
+                </div>
+                <div class="category-grid" id="category-grid"></div>
+                <div class="form-row">
+                    <label>日期</label>
+                    <div class="date-display" id="input-date-display" data-target="input-date">请选择日期时间</div>
+                    <input type="hidden" id="input-date">
+                </div>
+                <div class="form-row">
+                    <label>备注</label>
+                    <input type="text" id="input-note" placeholder="添加备注..." maxlength="50">
+                </div>
+                <button class="btn-save" id="btn-save">记一笔</button>
+            </div>
+            <div class="recent-section">
+                <h3>最近记录</h3>
+                <div id="recent-list" class="recent-list"></div>
+            </div>
+        </section>
+        <section id="page-stats" class="page">
+            <div class="time-switch">
+                <button class="time-btn active" data-range="today">今日</button>
+                <button class="time-btn" data-range="week">本周</button>
+                <button class="time-btn" data-range="month">本月</button>
+                <button class="time-btn" data-range="year">本年</button>
+            </div>
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <span class="summary-label">总支出</span>
+                    <span class="summary-value expense" id="stat-total-expense">¥0.00</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">总收入</span>
+                    <span class="summary-value income" id="stat-total-income">¥0.00</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">结余</span>
+                    <span class="summary-value balance" id="stat-balance">¥0.00</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>支出分类占比</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chart-pie"></canvas>
+                    <div id="pie-empty" class="chart-empty hidden">暂无数据</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>支出趋势</h3>
+                <div class="chart-wrapper chart-wrapper-line">
+                    <canvas id="chart-line"></canvas>
+                    <div id="line-empty" class="chart-empty hidden">暂无数据</div>
+                </div>
+            </div>
+        </section>
+        <section id="page-settings" class="page">
+            <div class="settings-group">
+                <h3>主题</h3>
+                <div class="theme-switch">
+                    <button class="theme-btn active" data-theme="light">浅色</button>
+                    <button class="theme-btn" data-theme="dark">深色</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>支出分类管理</h3>
+                <div id="expense-category-list" class="category-manage-list"></div>
+                <button class="btn-add-category" data-type="expense">+ 添加支出分类</button>
+            </div>
+            <div class="settings-group">
+                <h3>收入分类管理</h3>
+                <div id="income-category-list" class="category-manage-list"></div>
+                <button class="btn-add-category" data-type="income">+ 添加收入分类</button>
+            </div>
+            <div class="settings-group">
+                <h3>数据管理</h3>
+                <div class="data-actions">
+                    <button class="btn-data" id="btn-export">导出备份</button>
+                    <button class="btn-data" id="btn-import">恢复备份</button>
+                    <input type="file" id="file-import" accept=".json" class="hidden">
+                </div>
+            </div>
+            <div class="settings-group about-section">
+                <h3>关于</h3>
+                <div class="about-info">
+                    <div class="about-logo-row">
+                        <img src="封面.png" alt="记账本" class="about-logo">
+                        <div class="about-app">
+                            <span class="about-name">记账本</span>
+                            <span class="about-version">v1.0.0</span>
+                        </div>
+                    </div>
+                    <div class="about-row">
+                        <span class="about-label">作者</span>
+                        <span class="about-value">大康</span>
+                    </div>
+                    <div class="about-row">
+                        <span class="about-label">简介</span>
+                        <span class="about-value">一款简洁的本地记账应用</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-page="record">
+                <span class="nav-icon">✏️</span>
+                <span class="nav-label">记账</span>
+            </button>
+            <button class="nav-btn" data-page="stats">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">统计</span>
+            </button>
+            <button class="nav-btn" data-page="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
+    </div>
+    <div id="modal-edit" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3>编辑记录</h3>
+            <div class="amount-input">
+                <span class="currency-symbol">¥</span>
+                <input type="number" id="edit-amount" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="category-grid" id="edit-category-grid"></div>
+            <div class="form-row">
+                <label>日期</label>
+                <div class="date-display" id="edit-date-display" data-target="edit-date">请选择日期时间</div>
+                <input type="hidden" id="edit-date">
+            </div>
+            <div class="form-row">
+                <label>备注</label>
+                <input type="text" id="edit-note" placeholder="添加备注..." maxlength="50">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="btn-edit-cancel">取消</button>
+                <button class="btn-confirm" id="btn-edit-save">保存</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-category" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3 id="category-modal-title">添加分类</h3>
+            <div class="form-row">
+                <label>名称</label>
+                <input type="text" id="category-name" placeholder="分类名称" maxlength="10">
+            </div>
+            <div class="form-row">
+                <label>图标</label>
+                <input type="text" id="category-icon" placeholder="输入 emoji 如 🍜" maxlength="4">
+            </div>
+            <div class="form-row">
+                <label>颜色</label>
+                <input type="color" id="category-color" value="#E86B4A">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="btn-cat-cancel">取消</button>
+                <button class="btn-confirm" id="btn-cat-save">保存</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-confirm" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <p id="confirm-message">确定要删除吗？</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="btn-confirm-no">取消</button>
+                <button class="btn-danger" id="btn-confirm-yes">删除</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-alert" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <p id="alert-message"></p>
+            <div class="modal-actions">
+                <button class="btn-confirm" id="btn-alert-ok" style="flex:1">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-date" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content date-picker-modal">
+            <div class="dp-header">
+                <button class="dp-nav" id="dp-prev">‹</button>
+                <span class="dp-title" id="dp-title"></span>
+                <button class="dp-nav" id="dp-next">›</button>
+            </div>
+            <div class="dp-weekdays">
+                <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+            </div>
+            <div class="dp-days" id="dp-days"></div>
+            <div class="dp-time">
+                <span class="dp-time-label">时间</span>
+                <div class="dp-time-inputs">
+                    <button class="dp-time-btn" id="dp-hour-minus">−</button>
+                    <span class="dp-time-val" id="dp-hour">00</span>
+                    <button class="dp-time-btn" id="dp-hour-plus">+</button>
+                    <span class="dp-time-sep">:</span>
+                    <button class="dp-time-btn" id="dp-min-minus">−</button>
+                    <span class="dp-time-val" id="dp-min">00</span>
+                    <button class="dp-time-btn" id="dp-min-plus">+</button>
+                </div>
+            </div>
+            <div class="dp-actions">
+                <button class="btn-cancel" id="dp-today">今天</button>
+                <div class="dp-actions-right">
+                    <button class="btn-cancel" id="dp-cancel">取消</button>
+                    <button class="btn-confirm" id="dp-ok">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/record.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/datepicker.js"></script>
+</body>
+</html>

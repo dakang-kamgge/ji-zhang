@@ -1,0 +1,24 @@
+# 依赖
+node_modules/
+package-lock.json
+
+# Android 构建
+android/
+www/
+*.apk
+
+# 构建脚本
+build.sh
+build.bat
+
+# Capacitor
+capacitor.config.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# 敏感文件
+作者头像.png
