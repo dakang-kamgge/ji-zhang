@@ -4,6 +4,21 @@
 
 ![封面](封面.png)
 
+## 📥 下载安装
+
+### Android APK
+
+直接下载安装包，传到手机即可使用：
+
+[👉 下载 记账本.apk](记账本.apk)
+
+> 安装时需在手机设置中允许「安装未知来源应用」。  
+> 文件大小：约 13MB，支持 Android 7.0+
+
+### Web 版
+
+无需安装，浏览器打开 `index.html` 即可使用。
+
 ## ✨ 功能特性
 
 - **收支记账** — 支出/收入切换，预设分类（餐饮🍜、交通🚗、购物🛒 等），自定义分类图标与颜色
@@ -32,6 +47,7 @@
 ```
 ├── index.html          # 单页面（三个 section + 弹窗 + 底部导航）
 ├── 封面.png             # 应用图标
+├── 记账本.apk           # Android 安装包
 ├── css/
 │   └── style.css       # 全部样式（含浅色/深色主题）
 └── js/
@@ -47,8 +63,8 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/jizhang.git
-cd jizhang
+git clone https://github.com/dakang-kamgge/ji-zhang.git
+cd ji-zhang
 
 # 直接用浏览器打开
 open index.html        # macOS
